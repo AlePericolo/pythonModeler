@@ -1,0 +1,15 @@
+{
+  "connection":
+    {
+      "host": "127.0.0.1",
+      "user": "root",
+      "password": "Password14!",
+      "dbname": "ale_test"
+    },
+  "output":
+  {
+    "class": true,
+    "model": true,
+    "formatted": true
+  }
+}
