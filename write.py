@@ -22,7 +22,7 @@ else:
         if conf.output['class']:
             print '- class: ' + table
             try:
-                with open('writtenClasses/' + table.title() + '.php', 'w') as outfile:
+                with open('writtenFiles/' + table.title() + '.php', 'w') as outfile:
 
                     columns = conn.getColumnsByTable(table)
                     c = WriterClass.WriterClass(table, conf.output['formatted'])
@@ -34,7 +34,7 @@ else:
         if conf.output['model']:
             print '- model: ' + table
             try:
-                with open('writtenClasses/' + table.title() + 'Model.php', 'w') as outfile:
+                with open('writtenFiles/' + table.title() + 'Model.php', 'w') as outfile:
 
                     columns = conn.getColumnsByTable(table)
                     creatTableSyntax = conn.getCreateTableSyntax(table)
