@@ -1,7 +1,7 @@
 {
   "connection":
     {
-      "host": "127.0.0.1",
+      "host": "", ip host
       "user": "root",
       "password": "", dbPassword written in portainer - delete comments
       "dbname": "" dbName - delete comments
@@ -10,6 +10,7 @@
   {
     "class": true,
     "model": true,
+    "separaClassModel": false,
     "formatted": true
   }
 }

@@ -19,10 +19,16 @@ else:
 
     for (table,) in tables:
 
+        dirOutput = 'writtenFiles/'
+
         if conf.output['class']:
             print '- class: ' + table
+
+            if conf.output['separaClassModel']:
+                dirOutput = 'writtenFiles/class/'
+
             try:
-                with open('writtenFiles/' + table.title() + '.php', 'w') as outfile:
+                with open(dirOutput + table.title() + '.php', 'w') as outfile:
 
                     columns = conn.getColumnsByTable(table)
                     c = WriterClass.WriterClass(table, conf.output['formatted'])
@@ -33,8 +39,12 @@ else:
 
         if conf.output['model']:
             print '- model: ' + table
+
+            if conf.output['separaClassModel']:
+                dirOutput = 'writtenFiles/model/'
+
             try:
-                with open('writtenFiles/' + table.title() + 'Model.php', 'w') as outfile:
+                with open(dirOutput + table.title() + 'Model.php', 'w') as outfile:
 
                     columns = conn.getColumnsByTable(table)
                     creatTableSyntax = conn.getCreateTableSyntax(table)
