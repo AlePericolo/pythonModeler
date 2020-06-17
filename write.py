@@ -1,6 +1,6 @@
 from conf import ReadConf
 from connection import Connection
-from writer import WriterClass, WriterModel
+from writer import WriterClass, WriterModel, WriterAPI
 
 conf = ReadConf.ReadConf()
 #print conf
@@ -64,8 +64,9 @@ else:
                 with open(dirOutput + table.title() + '.php', 'w') as outfile:
 
                     columns = conn.getColumnsByTable(table)
-                    c = WriterClass.WriterClass(table, conf.output['formatted'])
-                    outfile.write(c.writeFile())
+                    creatTableSyntax = conn.getCreateTableSyntax(table)
+                    a = WriterAPI.WriterAPI(table, columns, creatTableSyntax, conf.output['formatted'])
+                    outfile.write(a.writeFile())
 
             except IOError:
                 print ('Errore Scrittura APIClassi')
