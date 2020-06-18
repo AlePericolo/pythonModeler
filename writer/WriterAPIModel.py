@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class WriterAPI:
+class WriterAPIModel:
 
     def __init__(self, table, columns, creatTableSyntax, format):
         self.table = table
@@ -41,13 +41,12 @@ class WriterAPI:
     # ------------------------------------------------------------------------------------------------------------------
 
     def __initClass(self):
-        return 'class ' + self.table.title() + ' {\n'
+        return 'class ' + self.table.title() + '_Model {\n'
 
     # ------------------------------------------------------------------------------------------------------------------
 
     def __attributes(self):
-        app = 'private $conn;\n'
-        app += 'private $this->tableName = "' + self.table + '";\n\n'
+        app = 'protected $conn;\n'
         for element in self.columns:
             type = self.__getAttributeTypeByElement(element)
             #signature
@@ -74,6 +73,7 @@ class WriterAPI:
         app = '//constructor\n'
         app += 'function __construct($conn){' + self.format
         app += '\t$this->conn= $conn;' + self.format
+        app += '\t$this->table_name = "' + self.table + '";'
         app += '}\n'
         return app
 
@@ -86,8 +86,8 @@ class WriterAPI:
         app += '\tfwrite($logfile, "\\n\\nQUERY: ". $query."\\n\\n");' + self.format
         app += '\n\t$query_result = $this->conn->query($query);' + self.format
         app += '\n\t$response = [];' + self.format
-        app += '\t$response = [\'query\'] = str_replace(["\'", \'"\'],"",$query);' + self.format
-        app += '\t$response = ["data"] = [];' + self.format
+        app += '\t$response[\'query\'] = str_replace(["\'", \'"\'],"",$query);' + self.format
+        app += '\t$response["data"] = [];' + self.format
         app += '\n\tif(!$query_result){'+ self.format
         app += '\t\t$response["status_code"] = 404;' + self.format
         app += '\t\t$response["status_text"] = "K0";' + self.format
@@ -95,7 +95,7 @@ class WriterAPI:
         app += '\t} else {' + self.format
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
-        app += '\t\t$result["message"] = "' + self.table + ' found "' + self.format
+        app += '\t\t$result["message"] = "' + self.table + ' found ";' + self.format
         app += '\t\tif(mysqli_num_rows($query_result) > 0){' + self.format
         app += '\t\t\twhile ($row = mysqli_fetch_assoc($query_result)){' + self.format
         app += '\t\t\t\t$element = array(' + self.format
@@ -114,7 +114,7 @@ class WriterAPI:
     # ------------------------------------------------------------------------------------------------------------------
 
     def __endClass(self):
-        return '} //close Class ' + self.table.title()
+        return '} //close Class ' + self.table.title() + '_Model'
 
     #===================================================================================================================
     # UTILITY
@@ -137,7 +137,7 @@ class WriterAPI:
     def __writeLogInit(self,type):
         log = '\n\terror_log("'+type+'");' + self.format
         log += '\t$logfile = fopen("../log/' + self.table + '_'+type+'.txt", "w") or die("Unable to open file!");' + self.format
-        log += '\tfwrite($logfile, "'+type+' LOG: ". date("d/m/yy h:i:s a") ' + self.__printLogSeparator('=', 50) + ' );' + self.format
+        log += '\tfwrite($logfile, "'+type+' LOG: ". date("d/m/yy h:i:s a") .' + self.__printLogSeparator('=', 50) + ' );' + self.format
         return log
 
     def __writeLogEnd(self,type):
