@@ -21,6 +21,7 @@ class WriterAPIModel:
         self.file += self.__costructor() + '\n'
         self.file += self.__printParagraph('FUNCTIONS', 104) + '\n'
         self.file += self.__read() + '\n'
+        self.file += self.__delete() + '\n'
 
         self.file += self.__endClass()
         return self.file
@@ -99,12 +100,35 @@ class WriterAPIModel:
         app += '\t\tif(mysqli_num_rows($query_result) > 0){' + self.format
         app += '\t\t\twhile ($row = mysqli_fetch_assoc($query_result)){' + self.format
         app += '\t\t\t\t$element = array(' + self.format
-        app += self.__writeObjectArray()
+        app += self.__writeFetchReadQuery()
         app += '\t\t\t\t);' + self.format
         app += '\t\t\t\tarray_push($response["data"], $element);' + self.format
         app += '\t\t\t}' + self.format
         app += '\t\t}' + self.format
         app += '\t}\n'
+        app += '\n\t$this->conn->close();' + self.format
+        app += self.__writeLogEnd('read')
+        app += '\n\treturn json_encode($response);' + self.format
+        app += '}\n'
+        return app
+
+    def __delete(self):
+        app = 'function delete(){' + self.format
+        app += self.__writeLogInit('delete')
+        app += '\n\t$query = "DELETE FROM " . $this->table_name . " WHERE id = " . $this->id ;' + self.format
+        app += '\tfwrite($logfile, "\\n\\nQUERY: ". $query."\\n\\n");' + self.format
+        app += '\n\t$query_result = $this->conn->query($query);' + self.format
+        app += '\n\t$response = [];' + self.format
+        app += '\t$response[\'query\'] = str_replace(["\'", \'"\'],"",$query);' + self.format
+        app += '\n\tif(!$query_result){'+ self.format
+        app += '\t\t$response["status_code"] = 503;' + self.format
+        app += '\t\t$response["status_text"] = "K0";' + self.format
+        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t} else {' + self.format
+        app += '\t\t$response["status_code"] = 200;' + self.format
+        app += '\t\t$response["status_text"] = "0K";' + self.format
+        app += '\t\t$result["message"] = "' + self.table + ' deleted ";' + self.format
+        app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
         app += self.__writeLogEnd('read')
         app += '\n\treturn json_encode($response);' + self.format
@@ -120,19 +144,15 @@ class WriterAPIModel:
     # UTILITY
     #===================================================================================================================
 
-    def __printParagraph(self, title, length = 100):
-        p = '/* ' + title + ' '
-        for x in range(length):
-            p += '-'
-        p += ' */\n'
-        return p
+    # query ------------------------------------------------------------------------------------------------------------
 
-    def __printLogSeparator(self, separator, length = 100):
-        p = ' " '
-        for x in range(length):
-            p += separator
-        p += ' "'
-        return p
+    def __writeFetchReadQuery(self):
+        arr = ''
+        for element in self.columns:
+            arr += '\t\t\t\t\t"' + element[0] + '" => $row["' + element[0] + '"],' + self.format
+        return arr
+
+    # log --------------------------------------------------------------------------------------------------------------
 
     def __writeLogInit(self,type):
         log = '\n\terror_log("'+type+'");' + self.format
@@ -146,11 +166,21 @@ class WriterAPIModel:
         log += '\tfclose($logfile);' + self.format
         return log
 
-    def __writeObjectArray(self):
-        arr = ''
-        for element in self.columns:
-            arr += '\t\t\t\t\t"' + element[0] + '" => $row["' + element[0] + '"],' + self.format
-        return arr
+    # separator --------------------------------------------------------------------------------------------------------
+
+    def __printParagraph(self, title, length = 100):
+        p = '/* ' + title + ' '
+        for x in range(length):
+            p += '-'
+        p += ' */\n'
+        return p
+
+    def __printLogSeparator(self, separator, length = 100):
+        p = ' " '
+        for x in range(length):
+            p += separator
+        p += ' "'
+        return p
 
     # ------------------------------------------------------------------------------------------------------------------
 
