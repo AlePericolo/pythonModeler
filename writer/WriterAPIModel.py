@@ -153,7 +153,7 @@ class WriterAPIModel:
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
         app += '\t\t$response["message"] = "' + self.table + ' created ";' + self.format
-        app += '\t\t$result["id"] = $this->conn->insert_id;' + self.format
+        app += '\t\t$response["id"] = $this->conn->insert_id;' + self.format
         app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
         app += self.__writeLogEnd('create')
