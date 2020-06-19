@@ -22,6 +22,8 @@ class WriterAPIModel:
         self.file += self.__printParagraph('FUNCTIONS', 104) + '\n'
         self.file += self.__read() + '\n'
         self.file += self.__delete() + '\n'
+        self.file += self.__create() + '\n'
+        self.file += self.__update() + '\n'
 
         self.file += self.__endClass()
         return self.file
@@ -130,7 +132,54 @@ class WriterAPIModel:
         app += '\t\t$result["message"] = "' + self.table + ' deleted ";' + self.format
         app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
-        app += self.__writeLogEnd('read')
+        app += self.__writeLogEnd('delete')
+        app += '\n\treturn json_encode($response);' + self.format
+        app += '}\n'
+        return app
+
+    def __create(self):
+        app = 'function create(){' + self.format
+        app += self.__writeLogInit('create')
+        app += self.__writeCreateQuery()
+        app += '\tfwrite($logfile, "\\n\\nQUERY: ". $query."\\n\\n");' + self.format
+        app += '\n\t$query_result = $this->conn->query($query);' + self.format
+        app += '\n\t$response = [];' + self.format
+        app += '\t$response[\'query\'] = str_replace(["\'", \'"\'],"",$query);' + self.format
+        app += '\n\tif(!$query_result){'+ self.format
+        app += '\t\t$response["status_code"] = 503;' + self.format
+        app += '\t\t$response["status_text"] = "K0";' + self.format
+        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t} else {' + self.format
+        app += '\t\t$response["status_code"] = 200;' + self.format
+        app += '\t\t$response["status_text"] = "0K";' + self.format
+        app += '\t\t$result["message"] = "' + self.table + ' created ";' + self.format
+        app += '\t\t$result["id"] = $this->conn->insert_id;' + self.format
+        app += '\t}' + self.format
+        app += '\n\t$this->conn->close();' + self.format
+        app += self.__writeLogEnd('create')
+        app += '\n\treturn json_encode($response);' + self.format
+        app += '}\n'
+        return app
+
+    def __update(self):
+        app = 'function update(){' + self.format
+        app += self.__writeLogInit('update')
+        app += self.__writeUpdateQuery()
+        app += '\tfwrite($logfile, "\\n\\nQUERY: ". $query."\\n\\n");' + self.format
+        app += '\n\t$query_result = $this->conn->query($query);' + self.format
+        app += '\n\t$response = [];' + self.format
+        app += '\t$response[\'query\'] = str_replace(["\'", \'"\'],"",$query);' + self.format
+        app += '\n\tif(!$query_result){'+ self.format
+        app += '\t\t$response["status_code"] = 503;' + self.format
+        app += '\t\t$response["status_text"] = "K0";' + self.format
+        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t} else {' + self.format
+        app += '\t\t$response["status_code"] = 200;' + self.format
+        app += '\t\t$response["status_text"] = "0K";' + self.format
+        app += '\t\t$result["message"] = "' + self.table + ' updated ";' + self.format
+        app += '\t}' + self.format
+        app += '\n\t$this->conn->close();' + self.format
+        app += self.__writeLogEnd('update')
         app += '\n\treturn json_encode($response);' + self.format
         app += '}\n'
         return app
@@ -151,6 +200,46 @@ class WriterAPIModel:
         for element in self.columns:
             arr += '\t\t\t\t\t"' + element[0] + '" => $row["' + element[0] + '"],' + self.format
         return arr
+
+    def __writeCreateQuery(self):
+        query = "\n\t$query = "
+        query += "'INSERT INTO' . $this->table_name .\n"
+        query += "\t\t\t'("
+
+        for idx, element in enumerate(self.columns):
+            #salto il 1 che è l'id
+            if idx > 0:
+                query += element[0]
+                #fino al penultimo separo gli elementi con la ','
+                if idx < len(self.columns)-1:
+                    query += ', '
+
+        query += ")' .\n\t\t\t' VALUES ' . \n \t\t\t'("
+
+        for idx, element in enumerate(self.columns):
+            #salto il 1 che è l'id
+            if idx > 0:
+                query += '\"\' . ' + '$this->' + element[0] + ' . \'\"'
+                #fino al penultimo separo gli elementi con la ','
+                if idx < len(self.columns)-1:
+                    query += ', '
+
+        query += ")';\n\n"
+        return query
+
+
+    def __writeUpdateQuery(self):
+        query = "\n\t$query = "
+        query += "'UPDATE ' . $this->table_name . ' SET' . "
+
+        for idx, element in enumerate(self.columns):
+            #salto il 1 che è l'id
+            if idx > 0:
+                query += "\n\t\t\t' " + element[0] + " = \" ' . $this->" + element[0] + " . '\",\' . "
+
+        query += "\n\t\t\t' WHERE id = ' . $this->id;\n\n"
+
+        return query
 
     # log --------------------------------------------------------------------------------------------------------------
 
