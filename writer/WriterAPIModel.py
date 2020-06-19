@@ -203,7 +203,7 @@ class WriterAPIModel:
 
     def __writeCreateQuery(self):
         query = "\n\t$query = "
-        query += "'INSERT INTO' . $this->table_name .\n"
+        query += "'INSERT INTO ' . $this->table_name .\n"
         query += "\t\t\t'("
 
         for idx, element in enumerate(self.columns):
@@ -235,7 +235,12 @@ class WriterAPIModel:
         for idx, element in enumerate(self.columns):
             #salto il 1 che è l'id
             if idx > 0:
-                query += "\n\t\t\t' " + element[0] + " = \" ' . $this->" + element[0] + " . '\",\' . "
+                query += "\n\t\t\t' " + element[0] + " = \" ' . $this->" + element[0] + " . '\" "
+                # fino al penultimo separo gli elementi con la ','
+                if idx < len(self.columns) - 1:
+                    query += ",\' . "
+                else:
+                    query += "\' . "
 
         query += "\n\t\t\t' WHERE id = ' . $this->id;\n\n"
 
