@@ -94,11 +94,11 @@ class WriterAPIModel:
         app += '\n\tif(!$query_result){'+ self.format
         app += '\t\t$response["status_code"] = 404;' + self.format
         app += '\t\t$response["status_text"] = "K0";' + self.format
-        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t\t$response["message"] = json_encode($this->conn->error);' + self.format
         app += '\t} else {' + self.format
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
-        app += '\t\t$result["message"] = "' + self.table + ' found ";' + self.format
+        app += '\t\t$response["message"] = "' + self.table + ' found ";' + self.format
         app += '\t\tif(mysqli_num_rows($query_result) > 0){' + self.format
         app += '\t\t\twhile ($row = mysqli_fetch_assoc($query_result)){' + self.format
         app += '\t\t\t\t$element = array(' + self.format
@@ -125,11 +125,11 @@ class WriterAPIModel:
         app += '\n\tif(!$query_result){'+ self.format
         app += '\t\t$response["status_code"] = 503;' + self.format
         app += '\t\t$response["status_text"] = "K0";' + self.format
-        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t\t$response["message"] = json_encode($this->conn->error);' + self.format
         app += '\t} else {' + self.format
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
-        app += '\t\t$result["message"] = "' + self.table + ' deleted ";' + self.format
+        app += '\t\t$response["message"] = "' + self.table + ' deleted ";' + self.format
         app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
         app += self.__writeLogEnd('delete')
@@ -148,11 +148,11 @@ class WriterAPIModel:
         app += '\n\tif(!$query_result){'+ self.format
         app += '\t\t$response["status_code"] = 503;' + self.format
         app += '\t\t$response["status_text"] = "K0";' + self.format
-        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t\t$response["message"] = json_encode($this->conn->error);' + self.format
         app += '\t} else {' + self.format
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
-        app += '\t\t$result["message"] = "' + self.table + ' created ";' + self.format
+        app += '\t\t$response["message"] = "' + self.table + ' created ";' + self.format
         app += '\t\t$result["id"] = $this->conn->insert_id;' + self.format
         app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
@@ -172,11 +172,11 @@ class WriterAPIModel:
         app += '\n\tif(!$query_result){'+ self.format
         app += '\t\t$response["status_code"] = 503;' + self.format
         app += '\t\t$response["status_text"] = "K0";' + self.format
-        app += '\t\t$result["message"] = $this->conn->error;' + self.format
+        app += '\t\t$response["message"] = json_encode($this->conn->error);' + self.format
         app += '\t} else {' + self.format
         app += '\t\t$response["status_code"] = 200;' + self.format
         app += '\t\t$response["status_text"] = "0K";' + self.format
-        app += '\t\t$result["message"] = "' + self.table + ' updated ";' + self.format
+        app += '\t\t$response["message"] = "' + self.table + ' updated ";' + self.format
         app += '\t}' + self.format
         app += '\n\t$this->conn->close();' + self.format
         app += self.__writeLogEnd('update')
