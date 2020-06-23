@@ -230,17 +230,17 @@ class WriterAPIModel:
 
     def __writeUpdateQuery(self):
         query = "\n\t$query = "
-        query += "'UPDATE ' . $this->table_name . ' SET' . "
+        query += "'UPDATE ' . $this->table_name . ' SET ' . "
 
         for idx, element in enumerate(self.columns):
             #salto il 1 che è l'id
             if idx > 0:
-                query += "\n\t\t\t' " + element[0] + " = \" ' . $this->" + element[0] + " . '\" "
+                query += "\n\t\t\t'" + element[0] + "=\"'.$this->"+element[0]+".'\""
                 # fino al penultimo separo gli elementi con la ','
                 if idx < len(self.columns) - 1:
-                    query += ",\' . "
+                    query += ",\'."
                 else:
-                    query += "\' . "
+                    query += "\'."
 
         query += "\n\t\t\t' WHERE id = ' . $this->id;\n\n"
 
